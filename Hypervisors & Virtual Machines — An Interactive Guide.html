@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Hypervisors &amp; Virtual Machines — An Interactive Guide</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#0a0e14;--s:#121926;--l:#26324a;--t:#e9edf4;--m:#9aa6ba;--a:#5b9bff;--ok:#5fbf8f;--bad:#e5646b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:56px}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:clip}
+#load{position:fixed;inset:0;background:var(--bg);z-index:99;display:grid;place-items:center;color:var(--m);font:13px ui-monospace,monospace;letter-spacing:.2em;transition:opacity .6s}
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;gap:2px;justify-content:safe center;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px;background:rgba(10,14,20,.92);border-bottom:1px solid var(--l)}
+nav a{color:var(--m);text-decoration:none;font-size:13px;padding:3px 10px}nav a:hover{color:#fff}
+#bar{position:fixed;top:0;left:0;height:2px;width:100%;background:var(--a);transform:scaleX(0);transform-origin:0 50%;z-index:60}
+.s{min-height:100vh;min-height:100svh;padding:84px 5vw 48px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative}.pin{height:100vh;height:100svh}.fit{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}#end,#quizs{background:var(--bg)}.stk{position:sticky;top:0;height:100vh;height:100svh;padding:84px 5vw 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden}@media(max-height:760px){.stk{padding-top:64px;padding-bottom:10px}.stk h2{font-size:26px;margin-bottom:6px}.stk p{font-size:13px;margin-bottom:6px}.stk .hc,.stk .vm{padding:8px 4px}.stk .link{height:12px}.stk .res{margin:4px 0}.stk .cap{min-height:2.6em}}@media(max-height:560px){.stk>p{display:none}}.stk>*{flex:none}#arch .stk,#hyp .stk{justify-content:flex-start;padding-top:80px}.stack{position:relative}#info{position:relative;z-index:3;margin-top:28px!important;min-height:56px}
+.k{font:12px ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--a);margin-bottom:8px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:400;margin:0 0 12px;line-height:1.12}h1{font-size:clamp(34px,7vw,84px)}h2{font-size:clamp(26px,4.6vw,46px)}h3{font-size:20px}
+p{max-width:740px;color:var(--m);margin:0 0 12px}
+.g{border:1px solid var(--l);background:var(--s);border-radius:6px;padding:16px}
+.row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;width:100%;max-width:1040px}.row>*{flex:1 1 240px}
+.cap{min-height:3.4em;color:var(--t);max-width:700px;font-size:15px}.cap b{color:var(--a)}
+.dots{display:flex;gap:5px;justify-content:center;margin:8px}.dots i{width:26px;height:3px;background:var(--l);transition:.3s}.dots i.on{background:var(--a)}
+#particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}#particles i{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--m);opacity:.5;animation:fl 9s ease-in-out infinite alternate}@keyframes fl{to{transform:translate(20px,-40px);opacity:.1}}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px;width:min(540px,86vw);border:1px solid var(--a);border-radius:8px;background:#0e1626;transform:perspective(900px) rotateX(35deg)}
+.chip{padding:16px 6px;border:1px solid var(--l);border-radius:4px;background:var(--s);color:var(--t);font:12px ui-monospace,monospace;letter-spacing:.1em}.chip.h{border-color:var(--a);color:var(--a)}
+.srv{width:min(520px,90vw);text-align:left}.res{margin:8px 0;font-size:13px;color:var(--m)}.res>div{height:8px;border-radius:2px;background:var(--l);overflow:hidden}.res i{display:block;height:100%;background:var(--a)}
+.envs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(700px,92vw);margin-top:14px}
+.vm{border:1px solid var(--k,var(--a));border-top-width:3px;border-radius:4px;padding:10px 6px;background:var(--s);font-size:14px}.vm b{display:block;color:var(--k,var(--a));font:600 12px ui-monospace,monospace}.vm small{display:block;color:var(--m);font-size:12px}.vm em{display:block;height:2px;background:var(--k,var(--a));transform-origin:0 50%;margin-top:6px}
+.stack{width:min(760px,94vw)}.vms{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hv{padding:14px;border-radius:4px;background:#1b2a4a;border:1px solid var(--a);font:600 14px ui-monospace,monospace;letter-spacing:.15em}.hv small{display:block;font:400 12px system-ui;letter-spacing:0;color:var(--m)}
+.hw{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.hc{padding:14px 4px;border:1px solid var(--l);border-radius:4px;background:var(--s);font:600 13px ui-monospace,monospace}
+.link{height:22px;width:2px;margin:0 auto;background:repeating-linear-gradient(180deg,var(--a) 0 5px,transparent 5px 11px);animation:fw 1s linear infinite}@keyframes fw{to{background-position:0 11px}}
+#arch [data-info]{cursor:pointer}#arch [data-info]:hover,#arch [data-info]:focus{outline:1px solid #fff}
+.t2{display:flex;flex-direction:column;gap:5px;margin:8px 0}.t2 div{padding:8px;border:1px solid var(--l);background:var(--bg);font-size:13px}
+.tb{width:100%;max-width:1040px;overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px;text-align:left}th,td{padding:9px 12px;border-bottom:1px solid var(--l);vertical-align:top}th{font:12px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--a);white-space:nowrap}td:first-child{white-space:nowrap;color:var(--t)}td{color:var(--m)}
+.rs{display:grid;grid-template-columns:70px 1fr 70px;gap:8px;align-items:center;margin:4px 0;font-size:14px;text-align:left}input[type=range]{width:100%;accent-color:var(--a)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;width:100%;max-width:1050px;text-align:left}.card .n{font:12px ui-monospace,monospace;color:var(--a)}.card p{font-size:14px}.card .e{font-size:13px;color:var(--t);border-top:1px solid var(--l);padding-top:8px;margin:0}.card .e b{color:var(--a);font-weight:600}
+ul.l{text-align:left;padding-left:20px;margin:6px 0;color:var(--m)}.pro{border-top:3px solid var(--ok)}.con{border-top:3px solid var(--bad)}
+#quiz{width:min(720px,94vw);text-align:left}#quiz button{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border-radius:4px;border:1px solid var(--l);background:var(--bg);color:var(--t);font:inherit;cursor:pointer}#quiz button:hover{border-color:var(--a)}#quiz .good{border-color:var(--ok);background:#12261d}#quiz .wrong{border-color:var(--bad);background:#2a1416}
+#quiz .btn,.btn{display:inline-block;width:auto;padding:10px 24px;border:1px solid var(--a);background:var(--a);color:#06101f;font-weight:600;cursor:pointer;border-radius:4px;margin-top:12px}
+@media(max-width:600px){.vm small{display:none}.rs{grid-template-columns:54px 1fr 54px}.hc{font-size:12px}}
+@media(max-width:600px){.stk h2,h2{font-size:24px}.stk{padding-left:3vw;padding-right:3vw}.hv small{display:none}.vm{font-size:12px}.card{padding:12px}.board{width:92vw}nav a{padding:3px 8px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}.pin{height:auto;min-height:100vh}}
+</style></head><body>
+<div id="load">LOADING</div><div id="bar"></div>
+<nav><a href="#hero">Intro</a><a href="#what">Concept</a><a href="#vmx">Virtual machine</a><a href="#hyp">Hypervisor</a><a href="#hw">Hardware support</a><a href="#types">Types</a><a href="#alloc">Resources</a><a href="#iso">Isolation</a><a href="#uses">Use cases</a><a href="#arch">Architecture</a><a href="#quizs">Quiz</a></nav>
+
+<section id="hero" class="s pin"><div id="particles"></div><div class="k">An interactive guide</div>
+<h1 id="ht">ONE MACHINE.<br>INFINITE POSSIBILITIES.</h1>
+<p id="hs">Discover the technology that allows one physical computer to become many virtual computers.</p>
+<div class="board" id="board"><div class="chip h">CPU</div><div class="chip">DIMM / RAM</div><div class="chip h">NVMe SSD</div><div class="chip">NIC</div><div class="chip">PCIe</div><div class="chip">BMC</div></div>
+<div id="scr" class="k" style="margin-top:26px;color:var(--m)">Scroll to move inside the machine</div></section>
+
+<section id="what" class="s pin"><div class="k">01 · Concept</div><h2>What is virtualization?</h2>
+<p id="def">Virtualization is the technology that allows one physical computer to run multiple independent virtual computers.</p>
+<div class="srv g"><b>Physical server</b>
+<div class="res">CPU<div><i style="width:100%" id="rc"></i></div></div><div class="res">RAM<div><i style="width:100%" id="rr"></i></div></div><div class="res">Storage<div><i style="width:100%" id="rs"></i></div></div></div>
+<div class="envs" id="envs"><div class="vm" style="--k:#5b9bff"><b>VM 1</b>CPU · RAM · disk share</div><div class="vm" style="--k:#c9a45c"><b>VM 2</b>CPU · RAM · disk share</div><div class="vm" style="--k:#8f86d9"><b>VM 3</b>CPU · RAM · disk share</div></div>
+<div class="cap" id="cmp">Without virtualization: 1 server · 1 operating system · 1 primary environment.</div></section>
+
+<section class="s" style="min-height:auto;padding-top:0"><div class="row"><div class="g con"><b>Without virtualization</b><ul class="l"><li>One physical server</li><li>One operating system</li><li>One primary environment, often under 15% utilized</li></ul></div><div class="g pro"><b>With virtualization</b><ul class="l"><li>One physical server</li><li>Multiple virtual machines</li><li>Multiple independent operating systems</li></ul></div></div>
+<p style="margin-top:16px;font-size:14px">Why it matters: servers once ran a single application each and sat mostly idle. VMware popularised x86 virtualization from 1999 onward, and today almost every public cloud is built on it.</p></section>
+
+<section id="vmx" class="s pin"><div class="k">02 · The virtual machine</div><h2>Understanding a virtual machine</h2>
+<p>A Virtual Machine is a software-based computer that behaves like a physical computer. To the guest operating system, its virtual hardware looks real.</p>
+<div class="g" style="width:min(560px,92vw)"><b>One VM, seen from inside</b><div class="row" id="parts" style="margin-top:10px"></div></div>
+<div class="envs" id="three"><div class="vm" style="--k:#5b9bff"><b>VM 1</b>Ubuntu Linux<small>nginx · Python</small></div><div class="vm" style="--k:#c9a45c"><b>VM 2</b>Windows<small>Office · .NET</small></div><div class="vm" style="--k:#8f86d9"><b>VM 3</b>Debian Linux<small>PostgreSQL · Redis</small></div></div></section>
+
+<section id="hyp" class="s pin"><div class="k">03 · The hypervisor</div><h2>The hypervisor: the control layer of virtualization</h2>
+<p style="font-size:15px">A Hypervisor is software or firmware that creates, runs, and manages virtual machines while allocating physical hardware resources.</p>
+<div id="st"></div><div class="dots" id="dots"></div><div class="cap" id="scap"></div></section>
+
+<section id="hw" class="s"><div class="k">04 · Under the hood</div><h2>How the hardware makes it fast</h2>
+<p>Modern hypervisors do not emulate a CPU in software. CPU vendors added virtualization features so guest code runs at near-native speed.</p>
+<div class="cards" id="hwc"></div></section>
+
+<section id="types" class="s"><div class="k">05 · Hypervisor types</div><h2>Type 1 and Type 2, with real products</h2>
+<div class="row" id="tt"><div class="g"><b>TYPE 1: bare-metal</b><p style="font-size:14px">Runs directly on physical hardware without a conventional host operating system underneath it.</p><div class="t2"><div>VM 1 | VM 2 | VM 3</div><div style="border-color:var(--a)">Type 1 hypervisor</div><div>Physical hardware</div></div></div>
+<div class="g"><b>TYPE 2: hosted</b><p style="font-size:14px">Runs as an application on top of an existing host operating system.</p><div class="t2"><div>Virtual machines</div><div style="border-color:var(--a)">Type 2 hypervisor (an app)</div><div>Host operating system</div><div>Physical hardware</div></div></div></div>
+<div class="tb g" style="margin-top:14px"><table><tr><th>Product</th><th>Type</th><th>Where you meet it</th></tr>
+<tr><td>VMware ESXi</td><td>1</td><td>Enterprise data centers (vSphere)</td></tr>
+<tr><td>Microsoft Hyper-V</td><td>1</td><td>Windows Server; Azure’s hypervisor is Hyper-V based</td></tr>
+<tr><td>Xen</td><td>1</td><td>Early AWS EC2, Qubes OS, XCP-ng</td></tr>
+<tr><td>KVM</td><td>1 (Linux kernel module)</td><td>Google Compute Engine, AWS Nitro (KVM-based), Proxmox VE, OpenStack</td></tr>
+<tr><td>Oracle VirtualBox</td><td>2</td><td>Desktop testing and learning labs</td></tr>
+<tr><td>VMware Workstation</td><td>2</td><td>Developers on Windows and Linux desktops</td></tr>
+<tr><td>Parallels Desktop</td><td>2</td><td>Running Windows on Apple Macs</td></tr></table></div></section>
+
+<section id="alloc" class="s"><div class="k">06 · Resource allocation</div><h2>Divide one server between three VMs</h2>
+<div class="g" style="width:min(760px,94vw)"><b>Physical server: 16 cores · 64 GB RAM · 1 TB storage</b><div id="sl"></div><div id="tot" style="margin-top:8px;text-align:left;font-size:14px"></div></div>
+<p style="font-size:14px;margin-top:12px">Real-world scale: the default VM 1 (4 vCPU, 16 GB) matches an AWS m5.xlarge instance. vCPU allocation does not necessarily mean exclusive assignment of physical cores: the scheduler time-slices vCPUs across cores, so total vCPUs can exceed the core count. RAM is stricter, because overcommitting forces swapping or ballooning.</p></section>
+
+<section id="iso" class="s pin"><div class="k">07 · Isolation</div><h2>VM isolation</h2>
+<div class="envs" style="margin:0"><div class="vm" id="i1" style="--k:#5fbf8f"><b>VM 1 · Ubuntu</b><span>Running</span></div><div class="vm" id="i2" style="--k:#5fbf8f"><b>VM 2 · Windows</b><span id="s2">Running</span><div id="err" style="color:var(--bad);font-weight:600">Application error</div></div><div class="vm" id="i3" style="--k:#5fbf8f"><b>VM 3 · Debian</b><span>Running</span></div></div>
+<div class="hv" style="width:min(700px,92vw);margin-top:10px">HYPERVISOR · keeps VMs separated</div>
+<div class="cap" id="icap" style="margin-top:12px"></div></section>
+
+<section id="uses" class="s"><div class="k">08 · Real-world applications</div><h2>Where virtualization runs today</h2><div class="cards" id="cards"></div></section>
+
+<section class="s"><div class="k">09 · Virtual machines vs containers</div><h2>A common point of confusion</h2>
+<p>Containers share the host kernel; VMs bring their own. Cloud platforms often run containers inside VMs to combine both.</p>
+<div class="tb g"><table><tr><th>Aspect</th><th>Virtual machine</th><th>Container</th></tr><tr><td>Kernel</td><td>Own guest kernel</td><td>Shares the host kernel</td></tr><tr><td>Isolation</td><td>Strong, hardware-assisted</td><td>Process-level, weaker boundary</td></tr><tr><td>Startup</td><td>Seconds to minutes</td><td>Milliseconds to seconds</td></tr><tr><td>Size</td><td>GBs (full OS)</td><td>MBs to hundreds of MBs</td></tr><tr><td>Different OS</td><td>Yes (Windows beside Linux)</td><td>Same kernel family only</td></tr><tr><td>Examples</td><td>ESXi, KVM, Hyper-V</td><td>Docker, containerd, Podman</td></tr></table></div></section>
+
+<section class="s"><div class="k">10 · Trade-offs</div><h2>Advantages and disadvantages</h2><div class="row" id="pc"><div class="g pro"><b>Advantages</b><ul class="l"><li>Better hardware utilization</li><li>Multiple operating systems</li><li>Reduced hardware costs</li><li>Flexible resource allocation</li><li>Easier testing and deployment</li><li>Simplified infrastructure management</li></ul></div><div class="g con"><b>Disadvantages</b><ul class="l"><li>Performance overhead in some workloads</li><li>Resource contention</li><li>Host hardware failure can affect multiple VMs</li><li>Additional management complexity</li><li>Security risks if misconfigured</li></ul></div></div></section>
+
+<section id="arch" class="s pin"><div class="k">11 · Complete architecture</div><h2>The full stack</h2><p style="font-size:14px">Click any layer to learn what it does.</p><div id="ar"></div><div class="g" id="info" style="margin-top:12px;max-width:640px;font-size:14px">Select a component.</div></section>
+
+<section id="quizs" class="s"><div class="k">12 · Knowledge test</div><h2>Check your understanding</h2><div id="quiz" class="g"></div></section>
+
+<section id="end" class="s"><h1 style="font-size:clamp(28px,5.5vw,64px)">ONE MACHINE.<br>MULTIPLE WORLDS.<br>POWERED BY VIRTUALIZATION.</h1><p>You now understand how hypervisors transform physical hardware into multiple virtual computing environments.</p><button class="btn" id="re">Restart Experience</button></section>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;gsap.registerPlugin(ScrollTrigger);
+const VM=[['VM 1','Ubuntu Linux','nginx · Python','#5b9bff'],['VM 2','Windows','Office · .NET','#c9a45c'],['VM 3','Debian Linux','PostgreSQL · Redis','#8f86d9']];
+const stack=()=>`<div class="stack"><div class="vms">${VM.map((v,i)=>`<div class="vm" data-info="vm${i}" tabindex="0" style="--k:${v[3]}"><b>${v[0]}</b>${v[1]}<small>${v[2]}</small><em class="boot"></em></div>`).join('')}</div><div class="link"></div><div class="hv" data-info="hv" tabindex="0">HYPERVISOR<small>allocates · schedules · isolates</small></div><div class="link"></div><div class="hw">${['CPU','RAM','SSD','NET'].map(h=>`<div class="hc" data-info="${h}" tabindex="0">${h}</div>`).join('')}</div></div>`;
+$('#st').innerHTML=stack();$('#ar').innerHTML=stack();
+const INFO={CPU:'CPU: the hypervisor schedules each VM’s vCPUs onto physical cores. Intel VT-x or AMD-V lets guest code run directly on the processor.',RAM:'RAM: memory is partitioned per VM. Nested paging (Intel EPT, AMD NPT) maps guest memory to host memory in hardware.',SSD:'Storage: each VM sees a virtual disk, usually a file (VMDK, VHDX, qcow2) or volume carved from physical storage.',NET:'Network: virtual NICs connect to a virtual switch that bridges to the physical network card.',hv:'Hypervisor: creates VMs, allocates hardware, handles privileged operations (VM exits) and keeps VMs isolated from each other.',vm0:'VM 1: Ubuntu Linux guest with its own virtual hardware and applications.',vm1:'VM 2: Windows guest, fully separate from the Linux guests.',vm2:'VM 3: Debian Linux guest, running independently of the others.'};
+$$('#arch [data-info]').forEach(e=>{const f=()=>$('#info').textContent=INFO[e.dataset.info];e.onclick=f;e.onkeydown=k=>k.key=='Enter'&&f()});
+for(let i=0;i<28;i++){const d=document.createElement('i');d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${-Math.random()*9}s`;$('#particles').appendChild(d)}
+$('#parts').innerHTML=['Virtual CPU (vCPU)','Virtual RAM','Virtual storage','Virtual network adapter','Guest operating system','Applications'].map(p=>`<div class="chip" style="flex:1 1 130px;padding:12px 4px">${p}</div>`).join('');
+const H=[['Hardware-assisted CPU','Intel VT-x and AMD-V add a mode where guest code runs directly on the CPU. Sensitive instructions trigger a “VM exit” to the hypervisor, which handles them and resumes the guest.'],['Nested paging','Intel EPT and AMD NPT let hardware translate guest-virtual to guest-physical to host-physical addresses, removing much of the memory overhead.'],['I/O virtualization','An IOMMU (Intel VT-d, AMD-Vi) and SR-IOV let devices be given to VMs safely. Paravirtual virtio drivers speed up disk and network for guests.'],['Management features','Snapshots, cloning and live migration move running VMs between hosts, for example VMware vMotion and Hyper-V Live Migration.']];
+$('#hwc').innerHTML=H.map((h,i)=>`<div class="g card"><div class="n">0${i+1}</div><h3>${h[0]}</h3><p>${h[1]}</p></div>`).join('');
+const C=[['Cloud computing','Providers rent slices of shared hardware as VMs on demand.','AWS EC2 (Nitro, KVM-based), Azure Virtual Machines, Google Compute Engine.'],['Data centers','Clusters pool many hosts; VMs migrate live and restart on another host after a failure.','VMware vSphere with vMotion and HA.'],['Software testing','Clean OS copies are created, tested and discarded, so tests never pollute a real machine.','Android Studio emulator using KVM, Hyper-V or Apple’s Hypervisor framework.'],['Server consolidation','Many lightly used servers become VMs on a few hosts, cutting power and space.','Replacing racks of single-app servers with a vSphere or Proxmox cluster.'],['Cybersecurity sandboxes','Suspicious files run in a disposable, isolated VM that can be reverted.','Qubes OS isolates apps in Xen VMs; Windows Sandbox uses a lightweight Hyper-V VM.'],['Development environments','Match production OS and tools on any laptop and reset them in minutes.','WSL 2 runs a real Linux kernel in a lightweight VM; Vagrant with VirtualBox.'],['Disaster recovery','VMs are snapshotted or replicated to another site and powered on if the primary fails.','Azure Site Recovery, VMware Site Recovery Manager.']];
+$('#cards').innerHTML=C.map((c,i)=>`<div class="g card"><div class="n">0${i+1}</div><h3>${c[0]}</h3><p>${c[1]}</p><p class="e"><b>Real example:</b> ${c[2]}</p></div>`).join('');
+const df=$('#def');df.innerHTML=df.textContent.split(' ').map(w=>`<span class="w">${w}</span>`).join(' ');
+const S=[[4,16],[6,24],[2,8]];
+$('#sl').innerHTML=S.map((s,i)=>`<div class="rs"><b>VM ${i+1}</b><span></span><span></span></div><div class="rs"><span>vCPU</span><input type="range" min="1" max="12" value="${s[0]}" data-i="${i}" data-k="0" aria-label="VM ${i+1} vCPU"><span></span></div><div class="rs"><span>RAM GB</span><input type="range" min="4" max="48" value="${s[1]}" data-i="${i}" data-k="1" aria-label="VM ${i+1} RAM"><span></span></div>`).join('');
+function upd(){const v=S.reduce((a,s)=>a+s[0],0),r=S.reduce((a,s)=>a+s[1],0),o=$$('#sl .rs');S.forEach((s,i)=>{o[i*3+1].lastElementChild.textContent=s[0];o[i*3+2].lastElementChild.textContent=s[1]});
+$('#tot').innerHTML=`vCPU: <b>${v}</b> of 16 cores: ${v>16?'overcommitted. Allowed, but VMs share cores and may contend.':'fits'}<div class="res"><div><i style="width:${Math.min(100,v/16*100)}%"></i></div></div>RAM: <b>${r}</b> of 64 GB: <span style="color:var(${r>64?'--bad':'--ok'})">${r>64?'overcommitted. Expect swapping or ballooning.':'fits'}</span><div class="res"><div><i style="width:${Math.min(100,r/64*100)}%"></i></div></div>`}
+$$('#sl input').forEach(e=>e.oninput=()=>{S[e.dataset.i][e.dataset.k]=+e.value;upd()});upd();
+ScrollTrigger.create({start:0,end:'max',onUpdate:s=>gsap.set('#bar',{scaleX:s.progress})});
+ScrollTrigger.config({ignoreMobileResize:true});
+
+const pin=(t,len,fn)=>{if(RM)return;const el=$(t);el.classList.remove('pin');el.style.cssText+=`;display:block;padding:0;min-height:0;height:calc(100vh + ${len}px);height:calc(100svh + ${len}px)`;const k=document.createElement('div');k.className='stk';[...el.children].forEach(c=>k.appendChild(c));el.appendChild(k);const tl=gsap.timeline({scrollTrigger:{trigger:el,start:'top top',end:'bottom bottom',scrub:1},defaults:{ease:'none'}});fn(tl)};
+pin('#hero',1600,tl=>{tl.to('#board',{scale:3.4,rotateX:0,duration:3}).to('#ht,#hs,#scr',{opacity:0,y:-60,duration:1},0).to('#board',{opacity:.1,duration:1},2).to('#particles',{scale:1.6,duration:3},0)});
+pin('#what',2400,tl=>{tl.from('#def .w',{opacity:.15,stagger:.1,duration:.6}).to('#rc',{opacity:.35,duration:.3}).to('#rc',{opacity:1,duration:.2}).to('#rr',{opacity:.35,duration:.3}).to('#rr',{opacity:1,duration:.2}).to('#rs',{opacity:.35,duration:.3}).to('#rs',{opacity:1,duration:.2}).from('#envs .vm',{opacity:0,y:-50,scale:.6,stagger:.3,duration:1})});
+if(!RM)ScrollTrigger.create({trigger:'#what',start:'top top',end:'+=2400',onUpdate:s=>$('#cmp').textContent=s.progress>.6?'With virtualization: 1 server · many VMs · many independent operating systems.':'Without virtualization: 1 server · 1 operating system · 1 primary environment.'});
+pin('#vmx',1800,tl=>{tl.from('#parts .chip',{x:()=>gsap.utils.random(-320,320),y:()=>gsap.utils.random(-220,220),opacity:0,stagger:.4,duration:1}).from('#three .vm',{opacity:0,y:60,stagger:.5,duration:1.2})});
+const steps=['<b>Step 1.</b> Physical hardware provides CPU, RAM, SSD and network resources.','<b>Step 2.</b> The hypervisor takes control of the hardware resources.','<b>Step 3.</b> Virtual machine containers are created.','<b>Step 4.</b> Resources are allocated to each VM.','<b>Step 5.</b> Guest operating systems boot (Ubuntu, Windows, Debian).','<b>Step 6.</b> Applications execute independently inside each VM.','<b>Step 7.</b> The hypervisor manages and isolates workloads on one machine.'];
+$('#dots').innerHTML=steps.map(()=>'<i></i>').join('');const dots=$$('#dots i');
+const setStep=n=>{$('#scap').innerHTML=steps[n];dots.forEach((d,i)=>d.classList.toggle('on',i<=n))};setStep(6);
+const build=(r,len)=>pin(r,len,tl=>{tl.from(r+' .hc',{opacity:.1,scale:.7,stagger:.2,duration:1},0).from(r+' .hv,'+r+' .link',{opacity:0,y:30,duration:1},1.2).from(r+' .vm',{opacity:0,y:-40,scale:.7,stagger:.2,duration:1},2.4).from(r+' .boot',{scaleX:0,stagger:.3,duration:1.2},4).from(r+' .vm small',{opacity:0,duration:1},5.2).to(r+' .vm',{y:-6,yoyo:true,repeat:1,stagger:.2,duration:.4},6.2)});
+build('#st',3000);
+if(!RM){ScrollTrigger.create({trigger:'#hyp',start:'top top',end:'+=3000',onUpdate:s=>setStep(Math.min(6,Math.floor(s.progress*7)))});
+gsap.from('#tt .g',{opacity:0,y:60,stagger:.3,ease:'none',scrollTrigger:{trigger:'#types',start:'top 80%',end:'top 35%',scrub:1}});
+gsap.from('#cards .card',{opacity:0,y:60,stagger:.12,ease:'none',scrollTrigger:{trigger:'#cards',start:'top 90%',end:'top 35%',scrub:1}});
+gsap.from('#hwc .card',{opacity:0,y:50,stagger:.15,ease:'none',scrollTrigger:{trigger:'#hwc',start:'top 90%',end:'top 50%',scrub:1}});
+gsap.from('#pc li',{opacity:0,x:-30,stagger:.1,ease:'none',scrollTrigger:{trigger:'#pc',start:'top 85%',end:'center 55%',scrub:1}});
+}
+const note=c=>$('#icap').innerHTML=c?'<b>VM 2 has crashed.</b> VM 1 and VM 3 keep running because the hypervisor keeps their memory and CPU state separate. Isolation limits the impact of failures, but it is not absolute security, and a failure of the host hardware still takes every VM down.':'All three VMs are running on the same physical host.';note(false);
+pin('#iso',1500,tl=>{tl.to({},{duration:1}).to('#i2',{'--k':'#e5646b',duration:.4}).from('#err',{opacity:0,duration:.4},'<').to('#i1,#i3',{y:-8,duration:.3}).to('#i1,#i3',{y:0,duration:.3}).to({},{duration:1})});
+if(!RM)ScrollTrigger.create({trigger:'#iso',start:'top top',end:'+=1500',onUpdate:s=>{const c=s.progress>.35;$('#s2').textContent=c?'Error':'Running';note(c)}});
+build('#ar',1800);
+const Q=[['What does virtualization let one physical computer do?',['Run one OS faster','Run multiple independent virtual computers','Replace its CPU with software','Turn off its OS'],1,'Virtualization shares one machine’s hardware among many isolated virtual computers.'],
+['A virtual machine is…',['A physical server','A software-based computer that behaves like a physical one','A type of CPU','A network cable'],1,'A VM has virtual CPU, RAM, storage and NIC, and runs a guest OS.'],
+['What does a hypervisor do?',['Cools the hardware','Creates, runs and manages VMs and allocates hardware','Replaces applications','Encrypts the disk only'],1,'It is the control layer between hardware and VMs.'],
+['Which is a Type 1 (bare-metal) hypervisor?',['VirtualBox','VMware ESXi','Parallels Desktop','VMware Workstation'],1,'ESXi runs directly on hardware; the others run on a host OS.'],
+['Which is a Type 2 (hosted) hypervisor?',['Xen','Hyper-V','Oracle VirtualBox','ESXi'],2,'VirtualBox is an application on top of a host OS.'],
+['Does assigning 4 vCPUs reserve 4 physical cores exclusively?',['Yes, always','No: vCPUs are scheduled onto shared physical cores','Only on Windows','Only on Linux'],1,'vCPUs are time-sliced; total vCPUs can exceed physical cores.'],
+['What is the risk of allocating 90 GB of RAM to VMs on a 64 GB host?',['None','Memory contention and swapping','Faster boot','Lower CPU use'],1,'Overcommitted RAM forces swapping or ballooning, slowing VMs.'],
+['An app crashes inside one VM. What normally happens to the others?',['All crash','They keep running thanks to isolation','The hypervisor reinstalls them','They lose network'],1,'Isolation contains the failure, though host hardware failure affects all.'],
+['Why do cloud providers such as AWS and Google rely on virtualization?',['To share hardware efficiently among many customers','To avoid using servers','To remove networking','To eliminate operating systems'],0,'VMs let providers pack and rent isolated slices of the same hardware.'],
+['Which desktop OS isolates apps in separate Xen VMs?',['Qubes OS','Ubuntu Server','Docker Hub','macOS Finder'],0,'Qubes OS uses Xen to separate activities into different VMs for security.']];
+let qi=0,sc=0;
+function showQ(){const q=Q[qi],z=$('#quiz');if(!q){z.innerHTML=`<h3>Score: ${sc} / ${Q.length}</h3><p>${sc>=8?'Excellent. You understand virtualization.':sc>=5?'Good work. Review the sections you missed.':'Scroll back up and try again.'}</p><button class="btn" id="rq">Retake quiz</button>`;$('#rq').onclick=()=>{qi=sc=0;showQ()};return}
+z.innerHTML=`<small>Question ${qi+1} of ${Q.length} · Score ${sc}</small><h3 style="margin-top:6px">${q[0]}</h3>`+q[1].map((o,i)=>`<button data-i="${i}">${o}</button>`).join('')+'<div id="ex"></div>';
+$$('#quiz button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i==q[2])sc++;$$('#quiz button').forEach((x,j)=>{x.disabled=true;x.className=j==q[2]?'good':j==i?'wrong':''});$('#ex').innerHTML=`<p><b>${i==q[2]?'Correct.':'Not quite.'}</b> ${q[3]}</p><button class="btn" id="nx">${qi==Q.length-1?'See score':'Next'}</button>`;$('#nx').onclick=()=>{qi++;showQ()}})}
+showQ();
+$('#re').onclick=()=>{qi=sc=0;showQ();scrollTo({top:0,behavior:RM?'auto':'smooth'})};
+$$('nav a').forEach(a=>a.onclick=e=>{e.preventDefault();const el=$(a.getAttribute('href')),y=el.getBoundingClientRect().top+scrollY-(el.style.height?0:56);scrollTo({top:y,behavior:RM?'auto':'smooth'})});
+setTimeout(()=>{const l=$('#load');l&&l.remove()},4000);
+addEventListener('load',()=>{ScrollTrigger.sort();ScrollTrigger.refresh();const l=$('#load');l.style.opacity=0;setTimeout(()=>l.remove(),700)});
+</script></body></html>
